@@ -17,6 +17,6 @@ libraryDependencies ++=   Seq(
     "edu.holycross.shot" %% "scm" % "6.0.2",
     "edu.holycross.shot" %% "citeobj" % "7.0.0",
     "edu.holycross.shot" %% "greek" % "1.4.0",
-    "edu.furman.classics" %% "poslib" % "0.1.0",
+    "edu.furman.classics" %% "poslib" % "0.2.0",
 	 "io.spray" %%  "spray-json" % "1.3.3"
 )
