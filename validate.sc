@@ -24,7 +24,7 @@ case class LexEntry(id:String, lemmaString:String, pos:String, entry:String, not
 	}
 }
 
-case class FormEntry(id:String, form:String, lex:LexEntry, postag:String) {
+case class FormEntry(form:String, lex:LexEntry, postag:String) {
 	val greekForm:LiteraryGreekString = LiteraryGreekString(form)
 	if (postag.size != 9){
 		throw new Exception(s"${postag} is not a valid part of speech tag.")
@@ -129,13 +129,14 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 	}
 
 	// Validate and build a vector of forms 
-	val formsVec:Vector[String] = formsRawData.lines.toVector
+	val formsLinesVec:Vector[String] = formsRawData.lines.toVector
+	val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
 
 	val formsHeaderLine:String = formsVec.head
-	if (formsHeaderLine == "id#form#lexId#postag") {
+	if (formsHeaderLine == "form#lexId#postag") {
 		println(s"Header on forms is valid.")
 	} else {
-		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tid#form#lexId#postag")
+		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tform#lexId#postag")
 		isValid = false
 	}
 	val formsEntryStrings:Vector[String] = formsVec.tail
@@ -146,20 +147,19 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 		formsEntryStrings.map(les => {
 			// Test for fields		
 			val splitLine = les.split("#")
-			if (splitLine.size < 4){
+			if (splitLine.size < 3){
 				println(s"This line has too few components\n\n\t${les}")
 				isValid = false
 			}
-			if (splitLine.size > 4){
+			if (splitLine.size > 3){
 				println(s"This line has too many components\n\n\t${les}")
 				isValid = false
 			}
 			// if we got here, we have a good number of fields
 			// so make a LexEntry
-			val newId:String = splitLine(0)
-			val newForm:String = splitLine(1)
-			val newLexIdString:String = splitLine(2)
-			val newDesc:String = splitLine(3)
+			val newForm:String = splitLine(0)
+			val newLexIdString:String = splitLine(1)
+			val newDesc:String = splitLine(2)
 
 			// test for valid lexEntry
 			val matchLexEntry = lexEntries.filter(_.id == newLexIdString)
@@ -167,7 +167,7 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 				println(s"No LexEntry matches id ${newLexIdString} from: '${les}'.")
 				//sys.exit(0)
 			} 
-			val newFormEntry:FormEntry = FormEntry(newId, newForm, matchLexEntry(0), newDesc)
+			val newFormEntry:FormEntry = FormEntry(newForm, matchLexEntry(0), newDesc)
 			if (newFormEntry.greekForm.ucode.contains("#")) {
 				println(s"${newFormEntry.greekForm.ucode} (${newFormEntry.greekForm.ascii}) contains an invalid character.")
 				isValid = false
@@ -176,11 +176,11 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 		})
 	}
 	// Confirm that there are no duplicate IDs 
-	val testFormsVec = allForms.groupBy(_.id).toVector
+	val testFormsVec = allForms.groupBy(identity).toVector
 	val filteredFormsVec = testFormsVec.filter(o => o._2.size > 1)
 	if (filteredFormsVec.size > 0){
-		println(s"The following Form Entries have duplicate IDs:")
-		for (dup <- filteredFormsVec){ println(s"${dup}")}
+		println(s"The following Form Entries are duplicates:")
+		for (dup <- filteredFormsVec){ println(s"${dup}\n")}
 		isValid = false
 	}
 
