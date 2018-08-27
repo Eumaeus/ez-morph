@@ -43,6 +43,41 @@ def ucodePlus(s:LiteraryGreekString):String = {
 
 }
 
+def betaCode(filePath:String = "documents/"):Unit = {
+	import scala.sys.process._
+
+	val outputMdFile:String = s"${filePath}betaCodeGuide.md"
+	val outputDocFile:String = s"${filePath}betaCodeGuide.docx"
+	val pw = new PrintWriter(new File(outputMdFile))
+
+	val ucodeGreekStr:String = "αβγδεζηθικλμνξοπρσςτυφχψωἀἁάὰᾶᾳᾄϊ.;:'"
+	val line1:String = s"""
+# Beta Code Guide 
+
+| Unicode | BetaCode |
+|---------|----------|
+"""
+	pw.write(line1)
+	println(line1)
+
+	for (c <- ucodeGreekStr) yield {
+		val lgs:LiteraryGreekString = LiteraryGreekString(c.toString)
+		val line2:String = s"| ${lgs.ucode} | ${lgs.ascii} |"
+		println(line2)
+		pw.append(line2)
+		pw.append("\n")
+	}
+
+	pw.close
+
+	val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
+	println(s"Running '${pandocIt}'")
+	pandocIt ! 
+
+
+	
+}
+
 /* --------------- */
 
 case class LexEntry(id:String, lemmaString:String, pos:String, entry:String, notes:String){
@@ -513,21 +548,25 @@ Things you can do:
 
 scala> greek("a)/qnrwpos")
 
-2. Lookup forms in your data:
+2. Generate a guide to Beta Code
+
+scala> betaCode()
+
+3. Lookup forms in your data:
 
 scala> lookup("lu/w")
 
-3. Analyze a sentence of Greek:
+4. Analyze a sentence of Greek:
 
 scala> analyze("to\\n a)/nqrwpon lu/w.")
 
-4. Analyze a file consisting of Greek sentences:
+5. Analyze a file consisting of Greek sentences:
 
 scala> analyzeFile()
 
 	This assumes the file of sentrences is "documents/exercises.txt"; output will be a markdown file and a .docx file in 'documents/'
 
-5. Get details on what forms you have seen. 
+6. Get details on what forms you have seen. 
 
     E.g. find all genitive forms you have recorded:
 
