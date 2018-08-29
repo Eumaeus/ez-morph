@@ -539,8 +539,7 @@ def analyzeFile(filePath:String = "documents/", inputName:String = "exercises"):
 	pandocIt ! 
 }
 
-
-val tips:String = """
+val tipsString:String = """
 
 Things you can do:
 
@@ -581,6 +580,11 @@ scala> for (f <- justVerbs) { println(f) }
 (You can see these tips again by typing "tips".)
 
 """
+
+def tips:Unit = {
+	for (l <- tipsString.lines) { println(l) }	
+}
+
 
 println()
 println("************************")
