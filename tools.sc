@@ -50,13 +50,15 @@ def betaCode(filePath:String = "documents/"):Unit = {
 	val outputDocFile:String = s"${filePath}betaCodeGuide.docx"
 	val pw = new PrintWriter(new File(outputMdFile))
 
-	val ucodeGreekStr:String = "αβγδεζηθικλμνξοπρσςτυφχψωἀἁάὰᾶᾳᾄϊ.;:'"
-	val line1:String = s"""
+	val ucodeGreekStr:String = "αβγδεζηθικλμνξοπρσςτυφχψωἀἁάὰᾶᾳᾄϊΑΒΓἈἌ.;:'"
+
+	
+		val line1:String = s"""
 # Beta Code Guide 
 
 | Unicode | BetaCode |
 |---------|----------|
-"""
+	"""
 	pw.write(line1)
 	println(line1)
 
@@ -73,8 +75,6 @@ def betaCode(filePath:String = "documents/"):Unit = {
 	val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
 	println(s"Running '${pandocIt}'")
 	pandocIt ! 
-
-
 	
 }
 
@@ -559,6 +559,8 @@ scala> lookup("lu/w")
 
 scala> analyze("to\\n a)/nqrwpon lu/w.")
 
+	(n.b. You have to double any beta-code grave accents, because '\' has a special meaning in Scala.)
+
 5. Analyze a file consisting of Greek sentences:
 
 scala> analyzeFile()
@@ -587,9 +589,12 @@ def tips:Unit = {
 
 
 println()
+println()
 println("************************")
 println(s"* Ready to work!      *")
 println("************************")
+
+tips
 
 
 
