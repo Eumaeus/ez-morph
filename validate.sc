@@ -2,8 +2,8 @@ import scala.io.Source
 import edu.holycross.shot.greek._
 import edu.furman.classics.poslib._
 
-val defaultLexFile:String = "data/lexicon.cex"
-val defaultFormsFile:String = "data/forms.cex"
+val defaultLexFile:String = "../lexdata/lexicon.cex"
+val defaultFormsFile:String = "../data/forms.cex"
 
 val parts:GreekPartsOfSpeech = GreekPartsOfSpeech()
 
