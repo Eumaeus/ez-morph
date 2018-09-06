@@ -133,10 +133,10 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 	val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
 
 	val formsHeaderLine:String = formsVec.head
-	if (formsHeaderLine == "form#lexId#postag") {
+	if (formsHeaderLine == "lexId#form#postag") {
 		println(s"Header on forms is valid.")
 	} else {
-		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tform#lexId#postag")
+		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tlexId#form#postag")
 		isValid = false
 	}
 	val formsEntryStrings:Vector[String] = formsVec.tail
