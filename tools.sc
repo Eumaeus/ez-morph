@@ -445,7 +445,7 @@ def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false
 	// report
 	if (forms._1.size > 0){
 		val headerVec:Vector[String] = Vector(
-			s"""Matches ${forms._1.size}:"""
+			s"""\nMatches ${forms._1.size}:"""
 		)
 		val formsVec:Vector[String] = {
 			for (m <- forms._1) yield {
