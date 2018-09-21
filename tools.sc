@@ -519,9 +519,8 @@ def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
 	println(analysis)
 }
 
-def analyzeFile(filePath:String = "documents/", inputName:String = "exercises"):Unit = {
+def analyzeFile(inputName:String = "exercises", filePath:String = "documents/"):Unit = {
 	import scala.sys.process._
-
 	val inputPath:String = s"${filePath}${inputName}.txt"	
 	val outputMdFile:String = s"${filePath}${inputName}.md"
 	val outputDocFile:String = s"${filePath}${inputName}.docx"
