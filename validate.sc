@@ -70,7 +70,7 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 
 	val headerLine:String = lexVec.head
 	if (headerLine == "id#lemma#partOfSpeech#entry#notes") {
-		//println(s"Header on lexical entries is valid.")
+		println(s"Header on lexical entries is valid.")
 	} else {
 		println(s"Invalid header:\n\t${headerLine}\nshould be\n\tid#lemma#partOfSpeech#entry#notes")
 		isValid = false
@@ -133,10 +133,10 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 	val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
 
 	val formsHeaderLine:String = formsVec.head
-	if (formsHeaderLine == "form#lexId#postag") {
+	if (formsHeaderLine == "lexId#form#postag") {
 		println(s"Header on forms is valid.")
 	} else {
-		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tform#lexId#postag")
+		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tlexId#form#postag")
 		isValid = false
 	}
 	val formsEntryStrings:Vector[String] = formsVec.tail
@@ -157,8 +157,8 @@ def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFil
 			}
 			// if we got here, we have a good number of fields
 			// so make a LexEntry
-			val newForm:String = splitLine(0)
-			val newLexIdString:String = splitLine(1)
+			val newForm:String = splitLine(1)
+			val newLexIdString:String = splitLine(0)
 			val newDesc:String = splitLine(2)
 
 			// test for valid lexEntry

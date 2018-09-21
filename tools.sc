@@ -407,19 +407,24 @@ val formEntries:Vector[FormEntry] = formEntriesOption.get
 
 def performLookup(s1:String, dt:Int = distanceThreshold):(Vector[FormEntry], Vector[LexEntry]) = {
 	val perfectMatches:Vector[FormEntry] = {
-		formEntries.filter(_.form == s1)
+		 val greekS1:LiteraryGreekString = LiteraryGreekString(s1)
+		//formEntries.filter(_.form == s1)
+		formEntries.filter( f => {
+			LiteraryGreekString(f.form).ascii == greekS1.ascii
+		})
 	}	
 	val partialMatches:Vector[LexEntry] = {
 		if (perfectMatches.size > 0) { Vector() }
 		else {
+			val greekS1:LiteraryGreekString = LiteraryGreekString(s1)
 			val lexMatches:Vector[LexEntry] = {
 				lexEntries.filter(f => {
-					weightedDistance(s1, f.lemmaString) <= dt
+					weightedDistance(greekS1.ascii, f.lemmaString) <= dt
 				})
 			}
 			val formMatches:Vector[FormEntry] = {
 				formEntries.filter(f => {
-					weightedDistance(s1, f.form) <= dt
+					weightedDistance(greekS1.ascii, f.form) <= dt
 				})
 			}
 			val lexesForForms:Vector[LexEntry] = {
@@ -440,7 +445,7 @@ def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false
 	// report
 	if (forms._1.size > 0){
 		val headerVec:Vector[String] = Vector(
-			s"""Matches ${forms._1.size}:"""
+			s"""\nMatches ${forms._1.size}:"""
 		)
 		val formsVec:Vector[String] = {
 			for (m <- forms._1) yield {
