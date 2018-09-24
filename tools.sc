@@ -115,7 +115,7 @@ case class FormEntry(form:String, lex:LexEntry, postag:String) {
 	}
 }
 
-def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile):Boolean =  {
+def quikValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile):Boolean =  {
 	var isValid:Boolean = true
 	val lexRawData:String = {
 		try {
@@ -283,7 +283,7 @@ def greek(beta:String = "e)lu/qhn lo/gos.") {
 }
 
 def getLexEntries(lexFile:String = defaultLexFile):Option[Vector[LexEntry]] = {
-	if (validate()) { 
+	if (quikValidate()) { 
 		// Validate and build a vector of lexEntries
 		val lexRawData:String = {
 			val lexData:String = Source.fromFile(lexFile).getLines.mkString("\n")
@@ -524,11 +524,11 @@ def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
 	println(analysis)
 }
 
-def analyzeFile(inputName:String = "exercises", filePath:String = "documents/"):Unit = {
+def analyzeFile(name:String = "exercises", filePath:String = "documents/"):Unit = {
 	import scala.sys.process._
-	val inputPath:String = s"${filePath}${inputName}.txt"	
-	val outputMdFile:String = s"${filePath}${inputName}.md"
-	val outputDocFile:String = s"${filePath}${inputName}.docx"
+	val inputPath:String = s"${filePath}${name}.txt"	
+	val outputMdFile:String = s"${filePath}${name}.md"
+	val outputDocFile:String = s"${filePath}${name}.docx"
 	val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
 
 	val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
