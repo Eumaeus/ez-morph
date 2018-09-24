@@ -324,7 +324,7 @@ def getLexEntries(lexFile:String = defaultLexFile):Option[Vector[LexEntry]] = {
 }
 
 def getFormEntries(formsFile:String = defaultFormsFile, lexEntries:Vector[LexEntry]):Option[Vector[FormEntry]] = {
-	if (validate()) {
+	if (quikValidate()) {
 		val formsRawData:String = {
 			val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
 			formsData
