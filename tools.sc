@@ -571,6 +571,10 @@ scala> analyzeFile()
 
 	This assumes the file of sentrences is "documents/exercises.txt"; output will be a markdown file and a .docx file in 'documents/'
 
+scala> analyzeFile("unit1")
+
+	This will anayze the file "documents/unit1.txt".
+
 6. Get details on what forms you have seen. 
 
     E.g. find all genitive forms you have recorded:
