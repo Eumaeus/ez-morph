@@ -110,7 +110,7 @@ case class FormEntry(form:String, lex:LexEntry, postag:String) {
 
 	def markdown:String = {
 		val entryString:String = lex.toString
-		val ts:String = s"**${ucodePlus(greekForm)}**, from ${ucodePlus(lex.lemma)}, *${lex.entry}*): ${pos}. "
+		val ts:String = s"**${ucodePlus(greekForm)}**, from ${ucodePlus(lex.lemma)}, *${lex.entry}*: ${pos}. "
 		ts
 	}
 }
@@ -507,7 +507,7 @@ def doAnalyze(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false):S
 		for ((t,i) <- tokens.zipWithIndex) yield {
 			markdown match {
 				case true => {
-					s"\n    ${i+1}. ${ucodePlus(LiteraryGreekString(t))}. ${returnLookup(t, markdown = true)}\n"
+					s"\n    ${i+1}. **${ucodePlus(LiteraryGreekString(t))}**. ${returnLookup(t, markdown = true)}\n"
 				}
 				case false => {
 					s"\n${i+1}. ${ucodePlus(LiteraryGreekString(t))}\n${returnLookup(t)}"
