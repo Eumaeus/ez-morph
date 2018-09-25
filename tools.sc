@@ -324,7 +324,7 @@ def getLexEntries(lexFile:String = defaultLexFile):Option[Vector[LexEntry]] = {
 }
 
 def getFormEntries(formsFile:String = defaultFormsFile, lexEntries:Vector[LexEntry]):Option[Vector[FormEntry]] = {
-	if (validate()) {
+	if (quikValidate()) {
 		val formsRawData:String = {
 			val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
 			formsData
@@ -570,6 +570,10 @@ scala> analyze("to\\n a)/nqrwpon lu/w.")
 scala> analyzeFile()
 
 	This assumes the file of sentrences is "documents/exercises.txt"; output will be a markdown file and a .docx file in 'documents/'
+
+scala> analyzeFile("unit1")
+
+	This will anayze the file "documents/unit1.txt".
 
 6. Get details on what forms you have seen. 
 
