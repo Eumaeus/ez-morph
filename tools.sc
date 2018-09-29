@@ -575,7 +575,7 @@ def analyzeFile(name:String = "exercises", filePath:String = "documents/"):Unit 
 		pw.close
 
 		val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
-		println(s"Success! Running '${pandocIt}'. Look for a Markdown (.md) version and a MS Word (.docx) version in the 'documents' directory.")
+		println(s"\n Success! The results will be in:\n\n ${outputMdFile} \n\n and \n\n ${outputDocFile}.\n")
 		pandocIt ! 
 	}
 }
