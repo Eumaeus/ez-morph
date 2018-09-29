@@ -2,15 +2,29 @@ import scala.io.Source
 import java.io._
 import edu.holycross.shot.greek._
 import edu.furman.classics.poslib._
+import scala.util.control.Exception.catching
 
 val defaultLexFile:String = "../lexdata/lexicon.cex"
 val defaultFormsFile:String = "../lexdata/forms.cex"
 val parts:GreekPartsOfSpeech = GreekPartsOfSpeech()
 
+
 /* USER PARAMETERS */
 val distanceThreshold:Int = 55 // lower = fewer suggested matches. From 1 to 100.
 
 /* --------------- */
+
+
+def handling[Ex <: Throwable, T](exType: Class[Ex])(block: => T): Either[Ex, T] =
+  catching(exType).either(block).asInstanceOf[Either[Ex, T]]
+
+/* Error reporting in the Console */
+def printError(e:String):Unit = {
+	println("*************************")
+    println("ERROR!")
+	println(e)
+	println("*************************")
+}
 
 /* Useful Values */
 
@@ -99,177 +113,166 @@ case class LexEntry(id:String, lemmaString:String, pos:String, entry:String, not
 }
 
 case class FormEntry(form:String, lex:LexEntry, postag:String) {
-	val greekForm:LiteraryGreekString = LiteraryGreekString(form)
-	val pos:GreekPartOfSpeech = parts.posFromTag(postag)
+		val greekForm:LiteraryGreekString = LiteraryGreekString(form)
+		val pos:GreekPartOfSpeech = parts.posFromTag(postag)
 
-	override def toString:String = {
-		val entryString:String = lex.toString
-		val ts:String = s"${ucodePlus(greekForm)} (${greekForm.ascii}) = ${pos}.\nFrom: ${entryString}"
-		ts
-	}
+		override def toString:String = {
+			val entryString:String = lex.toString
+			val ts:String = s"${ucodePlus(greekForm)} (${greekForm.ascii}) = ${pos}.\nFrom: ${entryString}"
+			ts
+		}
 
-	def markdown:String = {
-		val entryString:String = lex.toString
-		val ts:String = s"**${ucodePlus(greekForm)}**, from ${ucodePlus(lex.lemma)}, *${lex.entry}*: ${pos}. "
-		ts
-	}
+		def markdown:String = {
+			val entryString:String = lex.toString
+			val ts:String = s"**${ucodePlus(greekForm)}**, from ${ucodePlus(lex.lemma)}, *${lex.entry}*: ${pos}. "
+			ts
+		}
 }
 
-def quikValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile):Boolean =  {
-	var isValid:Boolean = true
-	val lexRawData:String = {
-		try {
+// Init variabls to hold data
+var lexEntriesOption:Option[Vector[LexEntry]] = None
+var formEntriesOption:Option[Vector[FormEntry]] = None
+
+def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile):Boolean = {
+	try {
+		val lexRawData:String = {
 			val lexData:String = Source.fromFile(lexFile).getLines.mkString("\n")
+			println(s"\nFound ${lexData.lines.size} lines of lexical data.")
 			lexData
-		} catch {
-			case e:Exception => {
-				println(s"${e}")
-				sys.exit(0)
-			}
 		}
-	}
-	val formsRawData:String = {
-		try {
-			val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
-			formsData
-		} catch {
-			case e:Exception => {
-				println(s"${e}")
-				sys.exit(0)
-			}
+
+		val formsRawData:String = {
+				val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
+				println(s"Found ${formsData.lines.size} lines of forms data.")
+				formsData
 		}
-	}
-	
-	// Validate and build a vector of lexEntries
-	val lexVec:Vector[String] = lexRawData.lines.toVector
 
-	val headerLine:String = lexVec.head
-	if (headerLine == "id#lemma#partOfSpeech#entry#notes") {
-		//println(s"Header on lexical entries is valid.")
-	} else {
-		println(s"Invalid header:\n\t${headerLine}\nshould be\n\tid#lemma#partOfSpeech#entry#notes")
-		isValid = false
-	}
-	val lexEntryStrings:Vector[String] = lexVec.tail
+		// Validate and build a vector of lexEntries
+		val lexVec:Vector[String] = lexRawData.lines.toVector
 
+		val headerLine:String = lexVec.head
+		if (headerLine != "id#lemma#partOfSpeech#entry#notes") {
+			throw new Exception(s"Invalid header in file ${lexFile}:\n\t${headerLine}\nshould be\n\tid#lemma#partOfSpeech#entry#notes")
+		}
+		val lexEntryStrings:Vector[String] = lexVec.tail
 
-	// Get a vector of lexical entries
-	val lexEntries:Vector[LexEntry] = {
-		lexEntryStrings.map(les => {
-			// Test for fields		
-			val splitLine = les.split("#")
-			if (splitLine.size < 4){
-				println(s"This line has too few components\n\n\t${les}")
-				isValid = false
-			}
-			if (splitLine.size > 5){
-				println(s"This line has too many components\n\n\t${les}")
-				isValid = false
-			}
-			// if we got here, we have a good number of fields
-			// so make a LexEntry
-			val newId:String = splitLine(0)
-			val newLemma:String = splitLine(1)
-			val newPos:String = splitLine(2)
-			val newEntry:String = splitLine(3)
-			val newNotes:String = {
-				splitLine.size match {
-					case 4 => ""
-					case 5 => splitLine(4)
-					case _ => {
-						println(s"Error (wrong number of components) in line: ${les}")
-						isValid = false
-						""
+		// Get a vector of lexical entries
+		val lexEntries:Vector[LexEntry] = {
+			lexEntryStrings.map(les => {
+				// Test for fields		
+				val splitLine = les.split("#")
+				if (splitLine.size < 4){
+					throw new Exception(s"This line in file ${lexFile} has too few components\n\n\t${les}\n")
+				}
+				if (splitLine.size > 5){
+					throw new Exception(s"This line in file ${lexFile} has too many components\n\n\t${les}")
+				}
+				// if we got here, we have a good number of fields
+				// so make a LexEntry
+				val newId:String = splitLine(0)
+				val newLemma:String = splitLine(1)
+				val newPos:String = splitLine(2)
+				val newEntry:String = splitLine(3)
+				val newNotes:String = {
+					splitLine.size match {
+						case 4 => ""
+						case 5 => splitLine(4)
+						case _ => {
+							throw new Exception(s"""Error (wrong number of components) in line: "${les}" of file ${lexFile}.""")
+						}
 					}
 				}
-			}
-			val newLexEntry:LexEntry = LexEntry(newId, newLemma, newPos, newEntry, newNotes)
-			// check for invalid characters
-			if (newLexEntry.lemma.ucode.contains("#")) {
-				println("----- ERROR! ------")
-				println(s"${newLexEntry.lemma.ucode} (${newLexEntry.lemma.ascii}) contains an invalid character.")
-				isValid = false
-			}
-			//println(s"\n----------")
-			//println(s"${newLexEntry}")
-			newLexEntry
-		})
+				val newLexEntry:LexEntry = LexEntry(newId, newLemma, newPos, newEntry, newNotes)
+				// check for invalid characters
+				if (newLexEntry.lemma.ucode.contains("#")) {
+					throw new Exception(s""" "${newLexEntry.lemma.ucode} (${newLexEntry.lemma.ascii})" n file ${lexFile} contains an invalid character.""")
+				}
+				//println(s"\n----------")
+				//println(s"${newLexEntry}")
+				newLexEntry
+			})
+		}
+		// Confirm that there are no duplicate IDs 
+		val testVec = lexEntries.groupBy(_.id).toVector
+		val filteredVec = testVec.filter(o => o._2.size > 1)
+		if (filteredVec.size > 0){
+			val errorStr1:String = s"The following Lexical Entries in file ${lexFile} have duplicate IDs:"
+			//for (dup <- filteredVec){ println(s"${dup}")}
+			val errorStr2:String = filteredVec.mkString("\n")
+			throw new Exception(s"${errorStr1}\n${errorStr2})")
+		}
+
+		// Validate and build a vector of forms 
+		val formsLinesVec:Vector[String] = formsRawData.lines.toVector
+		val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
+
+		val formsHeaderLine:String = formsVec.head
+		if (formsHeaderLine != "lexId#form#postag") {
+			throw new Exception(s"Invalid header in file ${formsFile}:\n\t${formsHeaderLine}\nshould be\n\tlexId#form#postag")
+		}
+		val formsEntryStrings:Vector[String] = formsVec.tail
+
+
+		// Get a vector of forms
+		val allForms:Vector[FormEntry] = {
+			formsEntryStrings.map(les => {
+				// Test for fields		
+				val splitLine = les.split("#")
+				if (splitLine.size < 3){
+					throw new Exception(s"This line in file ${formsFile} has too few components\n\n\t${les}")
+				}
+				if (splitLine.size > 3){
+					throw new Exception(s"This line in file ${formsFile} has too many components\n\n\t${les}")
+				}
+				// if we got here, we have a good number of fields
+				// so make a LexEntry
+				val newForm:String = splitLine(1)
+				val newLexIdString:String = splitLine(0)
+				val newDesc:String = splitLine(2)
+
+				// test for valid lexEntry
+				val matchLexEntry = lexEntries.filter(_.id == newLexIdString)
+				if (matchLexEntry.size < 1){
+					throw new Exception(s"""The form "${les}" (in file ${formsFile}) claims to be linked to a lexical entry with ID=${newLexIdString}, but no LexEntry in file ${lexFile} has that ID.""")
+				} 
+				/* Lets test the POS tag on its own */
+				val posEither: Either[edu.furman.classics.poslib.PosException, GreekPartOfSpeech] = handling(classOf[edu.furman.classics.poslib.PosException])(parts.posFromTag(newDesc))
+				posEither match {
+					case Left(e) => {
+						throw new Exception(s"""\n\n There is something wrong with the part-of-speech tag "${newDesc}" on the line "${les}" in file ${formsFile}. \n\n More details (the mistaken character will be after "tag ->": \n\n ${e}""")
+					}
+					case Right(_) => {
+						// do nothing 
+					}
+				}
+
+				val newFormEntry:FormEntry = FormEntry(newForm, matchLexEntry(0), newDesc)
+				if (newFormEntry.greekForm.ucode.contains("#")) {
+					throw new Exception(s""" "${newFormEntry.greekForm.ucode} (${newFormEntry.greekForm.ascii})" in file ${formsFile} contains an invalid character.""")
+				}
+				newFormEntry
+			})
+		}
+		// Confirm that there are no duplicate IDs 
+		val testFormsVec = allForms.groupBy(identity).toVector
+		val filteredFormsVec = testFormsVec.filter(o => o._2.size > 1)
+		if (filteredFormsVec.size > 0){
+			val errStr1:String = (s"The following Form Entries in file ${formsFile} are duplicates:")
+			//for (dup <- filteredFormsVec){ println(s"${dup}\n")}
+			val errStr2:String = filteredFormsVec.mkString("\n")
+			throw new Exception(s"${errStr1}\n${errStr2}")
+		}
+		println(s"Files are valid!")	
+		true
+
+	} catch {
+		case e:Exception => {
+			printError(e.toString)
+			false
+		}
 	}
-	// Confirm that there are no duplicate IDs 
-	val testVec = lexEntries.groupBy(_.id).toVector
-	val filteredVec = testVec.filter(o => o._2.size > 1)
-	if (filteredVec.size > 0){
-		println(s"The following Lexical Entries have duplicate IDs:")
-		for (dup <- filteredVec){ println(s"${dup}")}
-		isValid = false
-	}
-
-	// Validate and build a vector of forms 
-	val formsLinesVec:Vector[String] = formsRawData.lines.toVector
-	val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
-
-	val formsHeaderLine:String = formsVec.head
-	if (formsHeaderLine == "lexId#form#postag") {
-		println(s"Header on forms is valid.")
-	} else {
-		println(s"Invalid header:\n\t${formsHeaderLine}\nshould be\n\tlexId#form#postag")
-		isValid = false
-	}
-	val formsEntryStrings:Vector[String] = formsVec.tail
-
-
-	// Get a vector of forms
-	val allForms:Vector[FormEntry] = {
-		formsEntryStrings.map(les => {
-			// Test for fields		
-			val splitLine = les.split("#")
-			if (splitLine.size < 3){
-				println(s"This line has too few components\n\n\t${les}")
-				isValid = false
-			}
-			if (splitLine.size > 3){
-				println(s"This line has too many components\n\n\t${les}")
-				isValid = false
-			}
-			// if we got here, we have a good number of fields
-			// so make a LexEntry
-			val newForm:String = splitLine(1)
-			val newLexIdString:String = splitLine(0)
-			val newDesc:String = splitLine(2)
-
-			// test for valid lexEntry
-			val matchLexEntry = lexEntries.filter(_.id == newLexIdString)
-			if (matchLexEntry.size < 1){
-				println(s"No LexEntry matches id ${newLexIdString} from: '${les}'.")
-				//sys.exit(0)
-			} 
-			val newFormEntry:FormEntry = FormEntry(newForm, matchLexEntry(0), newDesc)
-
-			if (newFormEntry.greekForm.ucode.contains("#")) {
-				println("----- ERROR! ------")
-				println(s"${newFormEntry.greekForm.ucode} (${newFormEntry.greekForm.ascii}) contains an invalid character.")
-				isValid = false
-			}
-			newFormEntry
-		})
-	}
-	// Confirm that there are no duplicate IDs 
-	val testFormsVec = allForms.groupBy(identity).toVector
-	val filteredFormsVec = testFormsVec.filter(o => o._2.size > 1)
-	if (filteredFormsVec.size > 0){
-		println(s"The following Form Entries are duplicates:")
-		for (dup <- filteredFormsVec){ println(s"${dup}\n")}
-		isValid = false
-	}
-
-	isValid match {
-		case true => println(s"Files are valid!")
-		case false => println(s"INVALID. See error messages above.")
-	}
-	isValid
 
 }
-
 
 def greek(beta:String = "e)lu/qhn lo/gos.") {
 	val testGreekString:LiteraryGreekString = LiteraryGreekString(beta)
@@ -282,53 +285,46 @@ def greek(beta:String = "e)lu/qhn lo/gos.") {
 	println("-----------------------------\n")
 }
 
-def getLexEntries(lexFile:String = defaultLexFile):Option[Vector[LexEntry]] = {
-	if (quikValidate()) { 
-		// Validate and build a vector of lexEntries
-		val lexRawData:String = {
-			val lexData:String = Source.fromFile(lexFile).getLines.mkString("\n")
-			lexData
-		}	
+def getLexEntries(lexFile:String = defaultLexFile):Vector[LexEntry] = {
+	// Validate and build a vector of lexEntries
+	val lexRawData:String = {
+		val lexData:String = Source.fromFile(lexFile).getLines.mkString("\n")
+		lexData
+	}	
 
-		val lexVec:Vector[String] = lexRawData.lines.toVector
+	val lexVec:Vector[String] = lexRawData.lines.toVector
 
-		val headerLine:String = lexVec.head
-		val lexEntryStrings:Vector[String] = lexVec.tail
+	val headerLine:String = lexVec.head
+	val lexEntryStrings:Vector[String] = lexVec.tail
 
-		// Get a vector of lexical entries
-		val lexEntries:Vector[LexEntry] = {
-			lexEntryStrings.map(les => {
-				val splitLine = les.split("#")
-				val newId:String = splitLine(0)
-				val newLemma:String = splitLine(1)
-				val newPos:String = splitLine(2)
-				val newEntry:String = splitLine(3)
-				val newNotes:String = {
-					splitLine.size match {
-						case 5 => splitLine(4)
-						case _ => ""
-					}
+	// Get a vector of lexical entries
+	val lexEntries:Vector[LexEntry] = {
+		lexEntryStrings.map(les => {
+			val splitLine = les.split("#")
+			val newId:String = splitLine(0)
+			val newLemma:String = splitLine(1)
+			val newPos:String = splitLine(2)
+			val newEntry:String = splitLine(3)
+			val newNotes:String = {
+				splitLine.size match {
+					case 5 => splitLine(4)
+					case _ => ""
 				}
-				val newLexEntry:LexEntry = LexEntry(newId, newLemma, newPos, newEntry, newNotes)
-				//println(s"\n----------")
-				//println(s"${newLexEntry}")
-				newLexEntry
-			})
-		}
-
-		Some(lexEntries)
-
-	} else {
-		None
+			}
+			val newLexEntry:LexEntry = LexEntry(newId, newLemma, newPos, newEntry, newNotes)
+			//println(s"\n----------")
+			//println(s"${newLexEntry}")
+			newLexEntry
+		})
 	}
+	lexEntries
 }
 
-def getFormEntries(formsFile:String = defaultFormsFile, lexEntries:Vector[LexEntry]):Option[Vector[FormEntry]] = {
-	if (quikValidate()) {
-		val formsRawData:String = {
-			val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
-			formsData
-		}
+def getFormEntries(formsFile:String = defaultFormsFile, lexEntries:Vector[LexEntry]):Vector[FormEntry] = {
+	val formsRawData:String = {
+		val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
+		formsData
+	}
 	// Validate and build a vector of forms 
 	val formsLinesVec:Vector[String] = formsRawData.lines.toVector
 	val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
@@ -352,10 +348,7 @@ def getFormEntries(formsFile:String = defaultFormsFile, lexEntries:Vector[LexEnt
 				newFormEntry
 			})
 		}
-		Some(allForms)
-	} else {
-		None
-	}
+		allForms
 }
 
 // calculate the Levenshtein distance for two strings
@@ -388,56 +381,78 @@ def printDistance(s1: String, s2: String) {
 
 /* Load up our data! */
 
-val lexEntriesOption:Option[Vector[LexEntry]] = getLexEntries()
-if (lexEntriesOption == None) { 
-	println(s"No valid Lexical Entries found.")
-	sys.exit(0)
-} 
-// If we got here, we've got lexEntries
-val lexEntries:Vector[LexEntry] = lexEntriesOption.get
-
-val formEntriesOption:Option[Vector[FormEntry]] = getFormEntries(lexEntries = lexEntries)
-if (formEntriesOption == None) {
-	println(s"No valid Forms found.")
-	sys.exit(0)
+def loadData(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile) {
+	if ( doValidate(lexFile, formsFile) ) {
+		val lexEntries:Vector[LexEntry] = getLexEntries(lexFile)
+		lexEntriesOption = Some(lexEntries)
+		val formEntries:Vector[FormEntry] = getFormEntries(formsFile, lexEntries)
+		formEntriesOption = Some(formEntries)
+	} else {
+		lexEntriesOption = None
+		formEntriesOption = None
+	}
 }
 
-// If we got here, we've got Form entries
-val formEntries:Vector[FormEntry] = formEntriesOption.get
+def refresh(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile) {
+	println("\n----------------\nClearing old data…")
+	lexEntriesOption = None
+	formEntriesOption = None
+	println("\nValidating new data…")
+	loadData(lexFile, formsFile)
+	if ((lexEntriesOption != None) && (formEntriesOption != None)) {
+		val numLex:Int = lexEntriesOption.get.size
+		val numForms:Int = formEntriesOption.get.size
+		println(s"Success! \nLoaded ${numLex} lexical entries and ${numForms} forms.")
+		println("----------------\n")
+	} else {
+		println("Error: Data not loaded!")
+	}
+}
+
+def validate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile) {
+	refresh(lexFile, formsFile)
+}
+
 
 def performLookup(s1:String, dt:Int = distanceThreshold):(Vector[FormEntry], Vector[LexEntry]) = {
-	val perfectMatches:Vector[FormEntry] = {
-		 val greekS1:LiteraryGreekString = LiteraryGreekString(s1)
-		//formEntries.filter(_.form == s1)
-		formEntries.filter( f => {
-			LiteraryGreekString(f.form).ascii == greekS1.ascii
-		})
-	}	
-	val partialMatches:Vector[LexEntry] = {
-		if (perfectMatches.size > 0) { Vector() }
-		else {
-			val greekS1:LiteraryGreekString = LiteraryGreekString(s1)
-			val lexMatches:Vector[LexEntry] = {
-				lexEntries.filter(f => {
-					weightedDistance(greekS1.ascii, f.lemmaString) <= dt
-				})
-			}
-			val formMatches:Vector[FormEntry] = {
-				formEntries.filter(f => {
-					weightedDistance(greekS1.ascii, f.form) <= dt
-				})
-			}
-			val lexesForForms:Vector[LexEntry] = {
-				formMatches.map(f => {
-					f.lex
-				})
-			}
-			val finalMatches:Vector[LexEntry] = (lexMatches ++ lexesForForms).distinct
-			finalMatches
-		}		
+	if ((lexEntriesOption != None) && (formEntriesOption != None)) {
+		val perfectMatches:Vector[FormEntry] = {
+			 val greekS1:LiteraryGreekString = LiteraryGreekString(s1)
+			//formEntries.filter(_.form == s1)
+			formEntriesOption.get.filter( f => {
+				LiteraryGreekString(f.form).ascii == greekS1.ascii
+			})
+		}	
+		val partialMatches:Vector[LexEntry] = {
+			if (perfectMatches.size > 0) { Vector() }
+			else {
+				val greekS1:LiteraryGreekString = LiteraryGreekString(s1)
+				val lexMatches:Vector[LexEntry] = {
+					lexEntriesOption.get.filter(f => {
+						weightedDistance(greekS1.ascii, f.lemmaString) <= dt
+					})
+				}
+				val formMatches:Vector[FormEntry] = {
+					formEntriesOption.get.filter(f => {
+						weightedDistance(greekS1.ascii, f.form) <= dt
+					})
+				}
+				val lexesForForms:Vector[LexEntry] = {
+					formMatches.map(f => {
+						f.lex
+					})
+				}
+				val finalMatches:Vector[LexEntry] = (lexMatches ++ lexesForForms).distinct
+				finalMatches
+			}		
+		}
+		val returnMap:(Vector[FormEntry], Vector[LexEntry]) = (perfectMatches, partialMatches)
+		returnMap
+	} else {
+		println("""No data. Either the lexical entries, or the form entries are empty, or both. You might try loading data with "validate()" """)
+		val returnMap:(Vector[FormEntry], Vector[LexEntry]) = (Vector(), Vector())
+		returnMap
 	}
-	val returnMap:(Vector[FormEntry], Vector[LexEntry]) = (perfectMatches, partialMatches)
-	returnMap
 }
 
 def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false):String = {
@@ -520,52 +535,80 @@ def doAnalyze(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false):S
 }
 
 def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
-	val analysis:String = doAnalyze(s1, dt)
-	println(analysis)
+	if ( (lexEntriesOption == None) || (formEntriesOption == None) ) {
+		if (lexEntriesOption == None) {
+			val error:String = s"""There are no lexical entries loaded. Lexical entries are expected to be in ${defaultLexFile}. You might try loading data with "validate()". """
+			printError(error)
+		}
+		if (formEntriesOption == None) {
+			val error:String = s"""There are no morphological forms loaded. Forms are expected to be in ${defaultFormsFile}. You might try loading data with "validate()". """
+			printError(error)
+		}
+	} else {
+		val analysis:String = doAnalyze(s1, dt)
+		println(analysis)
+	}
 }
 
 def analyzeFile(name:String = "exercises", filePath:String = "documents/"):Unit = {
-	import scala.sys.process._
-	val inputPath:String = s"${filePath}${name}.txt"	
-	val outputMdFile:String = s"${filePath}${name}.md"
-	val outputDocFile:String = s"${filePath}${name}.docx"
-	val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
+	if ( (lexEntriesOption == None) || (formEntriesOption == None) ) {
+		if (lexEntriesOption == None) {
+			val error:String = s"""There are no lexical entries loaded. Lexical entries are expected to be in ${defaultLexFile}. You might try loading data with "validate()". """
+			printError(error)
+		}
+		if (formEntriesOption == None) {
+			val error:String = s"""There are no morphological forms loaded. Forms are expected to be in ${defaultFormsFile}. You might try loading data with "validate()". """
+			printError(error)
+		}
+	} else {
+		import scala.sys.process._
+		val inputPath:String = s"${filePath}${name}.txt"	
+		val outputMdFile:String = s"${filePath}${name}.md"
+		val outputDocFile:String = s"${filePath}${name}.docx"
+		val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
 
-	val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
-	println( anaVec.mkString("\n") )
+		val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
+		//println( anaVec.mkString("\n") )
 
-	val pw = new PrintWriter(new File(outputMdFile))
-	pw.write( anaVec.mkString("\n") )
-	pw.close
+		val pw = new PrintWriter(new File(outputMdFile))
+		pw.write( anaVec.mkString("\n") )
+		pw.close
 
-	val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
-	println(s"Running '${pandocIt}'")
-	pandocIt ! 
+		val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
+		println(s"Running '${pandocIt}'")
+		pandocIt ! 
+	}
 }
 
 val tipsString:String = """
 
 Things you can do:
 
-1. Print pretty Greek:
+1. Validate Lexical and Morphological data:
+
+scala> validate()
+	or
+scala> refresh()
+
+2. Print pretty Greek:
 
 scala> greek("a)/qnrwpos")
 
-2. Generate a guide to Beta Code
+3. Generate a guide to Beta Code
 
 scala> betaCode()
 
-3. Lookup forms in your data:
+4. Lookup forms in your data:
 
 scala> lookup("lu/w")
 
-4. Analyze a sentence of Greek:
+5. Analyze a sentence of Greek:
 
 scala> analyze("to\\n a)/nqrwpon lu/w.")
 
 	(n.b. You have to double any beta-code grave accents, because '\' has a special meaning in Scala.)
 
-5. Analyze a file consisting of Greek sentences:
+6. Analyze a file consisting of Greek sentences:
 
 scala> analyzeFile()
 
@@ -575,7 +618,7 @@ scala> analyzeFile("unit1")
 
 	This will anayze the file "documents/unit1.txt".
 
-6. Get details on what forms you have seen. 
+7. Get details on what forms you have seen. 
 
     E.g. find all genitive forms you have recorded:
 
@@ -589,18 +632,16 @@ scala> for (f <- justVerbs) { println(f) }
 
 (You can see these tips again by typing "tips".)
 
+╔═════════════════════════════╗
+║ Ready to Work!              ║
+║ Load data with "validate()" ║
+╚═════════════════════════════╝
+
 """
 
 def tips:Unit = {
 	for (l <- tipsString.lines) { println(l) }	
 }
-
-
-println()
-println()
-println("************************")
-println(s"* Ready to work!      *")
-println("************************")
 
 tips
 
