@@ -554,7 +554,7 @@ def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
 	}
 }
 
-def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile):Unit = {
+def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile, log:Boolean = false):Unit = {
 	try {
 		println(s"\nUpdating and validating data, from ${lexFile} and ${formsFile}")
 		validate(lexFile, formsFile)
@@ -576,7 +576,8 @@ def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFi
 			val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
 
 			val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
-			//println( anaVec.mkString("\n") )
+
+			if (log) println( anaVec.mkString("\n") )
 
 			val pw = new PrintWriter(new File(outputMdFile))
 			pw.write( anaVec.mkString("\n") )
