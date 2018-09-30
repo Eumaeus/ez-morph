@@ -554,7 +554,7 @@ def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
 	}
 }
 
-def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile, log:Boolean = false):Unit = {
+def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile, logOnly:Boolean = false):Unit = {
 	try {
 		println(s"\nUpdating and validating data, from ${lexFile} and ${formsFile}")
 		validate(lexFile, formsFile)
@@ -577,15 +577,18 @@ def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFi
 
 			val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
 
-			if (log) println( anaVec.mkString("\n") )
+			if (logOnly){ 
+				println( anaVec.mkString("\n") )
+			} else {
 
-			val pw = new PrintWriter(new File(outputMdFile))
-			pw.write( anaVec.mkString("\n") )
-			pw.close
+				val pw = new PrintWriter(new File(outputMdFile))
+				pw.write( anaVec.mkString("\n") )
+				pw.close
 
-			val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
-			println(s"\n Success! The results will be in:\n\n ${outputMdFile} \n\n and \n\n ${outputDocFile}.\n")
-			pandocIt ! 
+				val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
+				println(s"\n Success! The results will be in:\n\n ${outputMdFile} \n\n and \n\n ${outputDocFile}.\n")
+				pandocIt ! 
+			}
 		}
 	} catch {
 		case e:Exception => printError(s"${e}")
