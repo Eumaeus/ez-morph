@@ -550,33 +550,40 @@ def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
 	}
 }
 
-def analyzeFile(name:String = "exercises", filePath:String = "documents/"):Unit = {
-	if ( (lexEntriesOption == None) || (formEntriesOption == None) ) {
-		if (lexEntriesOption == None) {
-			val error:String = s"""There are no lexical entries loaded. Lexical entries are expected to be in ${defaultLexFile}. You might try loading data with "validate()". """
-			printError(error)
+def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile):Unit = {
+	try {
+		println(s"\nUpdating and validating data, from ${lexFile} and ${formsFile}")
+		validate(lexFile, formsFile)
+
+		if ( (lexEntriesOption == None) || (formEntriesOption == None) ) {
+			if (lexEntriesOption == None) {
+				val error:String = s"""There are no lexical entries loaded. Lexical entries are expected to be in ${defaultLexFile}. You might try loading data with "validate()". """
+				printError(error)
+			}
+			if (formEntriesOption == None) {
+				val error:String = s"""There are no morphological forms loaded. Forms are expected to be in ${defaultFormsFile}. You might try loading data with "validate()". """
+				printError(error)
+			}
+		} else {
+			import scala.sys.process._
+			val inputPath:String = s"${filePath}${name}.txt"	
+			val outputMdFile:String = s"${filePath}${name}.md"
+			val outputDocFile:String = s"${filePath}${name}.docx"
+			val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
+
+			val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
+			//println( anaVec.mkString("\n") )
+
+			val pw = new PrintWriter(new File(outputMdFile))
+			pw.write( anaVec.mkString("\n") )
+			pw.close
+
+			val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
+			println(s"\n Success! The results will be in:\n\n ${outputMdFile} \n\n and \n\n ${outputDocFile}.\n")
+			pandocIt ! 
 		}
-		if (formEntriesOption == None) {
-			val error:String = s"""There are no morphological forms loaded. Forms are expected to be in ${defaultFormsFile}. You might try loading data with "validate()". """
-			printError(error)
-		}
-	} else {
-		import scala.sys.process._
-		val inputPath:String = s"${filePath}${name}.txt"	
-		val outputMdFile:String = s"${filePath}${name}.md"
-		val outputDocFile:String = s"${filePath}${name}.docx"
-		val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
-
-		val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
-		//println( anaVec.mkString("\n") )
-
-		val pw = new PrintWriter(new File(outputMdFile))
-		pw.write( anaVec.mkString("\n") )
-		pw.close
-
-		val pandocIt:String = s"pandoc -o ${outputDocFile} ${outputMdFile}"
-		println(s"\n Success! The results will be in:\n\n ${outputMdFile} \n\n and \n\n ${outputDocFile}.\n")
-		pandocIt ! 
+	} catch {
+		case e:Exception => printError(s"${e}")
 	}
 }
 
