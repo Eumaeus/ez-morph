@@ -474,7 +474,11 @@ def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false
 		returnVec.mkString(" ")
 	} else {
 		val headerVec:Vector[String] = Vector(
-			s"No documented form matches."
+			if (markdown) {
+				s"❌ No documented form matches."
+			} else {
+				s"No documented form matches."
+			}
 		)
 
 		val formsVec:Vector[String] = {
