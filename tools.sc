@@ -148,7 +148,7 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 		}
 
 		// Validate and build a vector of lexEntries
-		val lexVec:Vector[String] = lexRawData.lines.toVector
+		val lexVec:Vector[String] = lexRawData.lines.toVector.filter(_.size > 1)
 
 		val headerLine:String = lexVec.head
 		if (headerLine != "id#lemma#partOfSpeech#entry#notes") {
@@ -162,10 +162,10 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 				// Test for fields		
 				val splitLine = les.split("#")
 				if (splitLine.size < 4){
-					throw new Exception(s"This line in file ${lexFile} has too few components\n\n\t${les}\n")
+					throw new Exception(s"""This line in file ${lexFile} has too few components\n\n\t"${les}"\n""")
 				}
 				if (splitLine.size > 5){
-					throw new Exception(s"This line in file ${lexFile} has too many components\n\n\t${les}")
+					throw new Exception(s"""This line in file ${lexFile} has too many components\n\n\t"${les}" """)
 				}
 				// if we got here, we have a good number of fields
 				// so make a LexEntry
@@ -288,7 +288,7 @@ def greek(beta:String = "e)lu/qhn lo/gos.") {
 def getLexEntries(lexFile:String = defaultLexFile):Vector[LexEntry] = {
 	// Validate and build a vector of lexEntries
 	val lexRawData:String = {
-		val lexData:String = Source.fromFile(lexFile).getLines.mkString("\n")
+		val lexData:String = Source.fromFile(lexFile).getLines.filter(_.size > 1).mkString("\n")
 		lexData
 	}	
 
