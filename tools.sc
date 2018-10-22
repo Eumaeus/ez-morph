@@ -124,7 +124,7 @@ case class FormEntry(form:String, lex:LexEntry, postag:String) {
 
 		def markdown:String = {
 			val entryString:String = lex.toString
-			val ts:String = s"**${ucodePlus(greekForm)}**, from ${ucodePlus(lex.lemma)}, *${lex.entry}*: ${pos}. "
+			val ts:String = s"**${ucodePlus(greekForm)}**: ${pos}, from ${ucodePlus(lex.lemma)}, *${lex.entry}*. "
 			ts
 		}
 }
