@@ -12,6 +12,7 @@ libraryDependencies ++=   Seq(
     "edu.holycross.shot.cite" %% "xcite" % "3.3.0",
     "edu.holycross.shot" %% "cex" % "6.2.1",
     "edu.holycross.shot" %% "citerelations" % "2.1.1",
+    "org.scala-lang.modules" %% "scala-xml" % "1.1.0",
     "edu.holycross.shot" %% "ohco2" % "10.8.1",
     "edu.holycross.shot" %% "citebinaryimage" % "1.1.2",
     "edu.holycross.shot" %% "scm" % "6.0.2",
