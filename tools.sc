@@ -3,10 +3,12 @@ import java.io._
 import edu.holycross.shot.greek._
 import edu.furman.classics.poslib._
 import scala.util.control.Exception.catching
+import  java.util.Calendar
 
 val defaultLexFile:String = "../lexdata/lexicon.cex"
 val defaultFormsFile:String = "../lexdata/forms.cex"
 val parts:GreekPartsOfSpeech = GreekPartsOfSpeech()
+
 
 
 /* USER PARAMETERS */
@@ -128,6 +130,9 @@ case class FormEntry(form:String, lex:LexEntry, postag:String) {
 			ts
 		}
 }
+
+// for holding looked up stuff
+var lookupRes:scala.collection.mutable.Map[String,(Vector[FormEntry], Vector[LexEntry])] = scala.collection.mutable.Map()
 
 // Init variabls to hold data
 var lexEntriesOption:Option[Vector[LexEntry]] = None
@@ -456,7 +461,20 @@ def performLookup(s1:String, dt:Int = distanceThreshold):(Vector[FormEntry], Vec
 }
 
 def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false):String = {
-	val forms:(Vector[FormEntry], Vector[LexEntry]) = performLookup(s1, dt )
+	val start = System.currentTimeMillis
+
+	// For each string, see if it is in lookupRes	
+	val forms:(Vector[FormEntry], Vector[LexEntry]) = {
+		if (lookupRes.contains(s1)) { lookupRes(s1) }
+		else {			
+			val newForm:(Vector[FormEntry], Vector[LexEntry]) = performLookup(s1, dt )
+			lookupRes += (s1 -> newForm)
+			newForm
+		}
+	}
+
+
+//	val forms:(Vector[FormEntry], Vector[LexEntry]) = performLookup(s1, dt )
 	// report
 	if (forms._1.size > 0){
 		val headerVec:Vector[String] = Vector(
@@ -471,6 +489,8 @@ def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false
 			}
 		}
 		val returnVec:Vector[String] = headerVec ++ formsVec
+		val totalTime = System.currentTimeMillis - start
+	    //println(s"\t\t${s1}: %1d ms".format(totalTime))
 		returnVec.mkString(" ")
 	} else {
 		val headerVec:Vector[String] = Vector(
@@ -497,6 +517,8 @@ def returnLookup(s1:String, dt:Int = distanceThreshold, markdown:Boolean = false
 			}
 		}
 		val returnVec:Vector[String] = headerVec ++ formsVec
+		val totalTime = System.currentTimeMillis - start
+	    //println(s"\t\t${s1}: %1d ms".format(totalTime))
 		returnVec.mkString(" ")
 	}
 }
@@ -556,6 +578,7 @@ def analyze(s1:String, dt:Int = distanceThreshold):Unit = {
 
 def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFile:String = defaultLexFile, formsFile:String = defaultFormsFile, logOnly:Boolean = false):Unit = {
 	try {
+		lookupRes = scala.collection.mutable.Map() 
 		println(s"\nUpdating and validating data, from ${lexFile} and ${formsFile}")
 		validate(lexFile, formsFile)
 
@@ -575,12 +598,28 @@ def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFi
 			val outputDocFile:String = s"${filePath}${name}.docx"
 			val exData:Vector[String] = Source.fromFile(inputPath).getLines.filter(_.size > 0).toVector
 
-			val anaVec:Vector[String] = exData.map(l => doAnalyze(l, markdown = true))
+			/* Experiment with efficiency */
+			val allWords:Vector[String] = depunctuate(exData.mkString(" ")).split(" ").filter(_.size > 0).toVector
+			println(s"There are ${allWords.size} words.")
+			println(s"There are ${allWords.distinct.size} distinct words.")
+
+
+
+			val anaVec:Vector[String] = exData.map(l => {
+				//val then = Calendar.getInstance()
+				val start = System.currentTimeMillis
+				val analysis:String = doAnalyze(l, markdown = true)
+				val totalTime = System.currentTimeMillis - start
+			    //println("%1d".format(totalTime))
+				//val now = Calendar.getInstance()
+				//val elapsed = now.get(Calendar.SECOND) - then.get(Calendar.SECOND)
+				//println(s"Sentence analyzed in: ${elapsed}")
+				analysis
+			})
 
 			if (logOnly){ 
 				println( anaVec.mkString("\n") )
 			} else {
-
 				val pw = new PrintWriter(new File(outputMdFile))
 				pw.write( anaVec.mkString("\n") )
 				pw.close
