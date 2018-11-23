@@ -1,0 +1,111 @@
+
+body {
+	font-family: "Lucida Grande", system-ui, -apple-system, BlinkMacSystemFont;
+	font-size: calc(20px + (30 - 20) * ((100vw - 750px) / (1600 - 750)));
+	background-color: #f1f0f0;
+}
+
+
+.formsList.hidden, .suggestionsList.hidden {
+	display: none;	
+}
+
+.analyzedSentences {
+	margin: 2em;
+}
+
+span.tokenSpan:hover {
+	background-color: rgba(0,0,0,0.1);
+}
+
+.acc {
+}
+
+.gen {
+}
+
+.dat {
+}
+
+
+
+.acc.dat {
+}
+
+.gen.dat {
+}
+
+.acc.gen {
+}
+
+.acc.dat.gen {
+}
+
+.unanalyzed {
+	border: 1px dashed red;	
+}
+
+.verb {
+}
+
+
+span.tokenSpan:hover ul {
+	display: block;
+	position: absolute;
+	list-style-type: none;
+	bottom: 10px;
+	left: 0px;
+	right: 0px;
+	font-weight: normal;
+	font-size: 85%;
+	line-height: 1.2em;
+	padding: 30px;
+	background-color:#213450;
+	color: #ddd;
+	text-align: left;
+}
+
+span.tokenSpan:hover ul.suggestionsList:before {
+	content: "No matching forms. Suggestions:";
+	color: gold;
+	padding-bottom: 1em;
+}
+
+
+span.entry {
+	font-weight: bold;	
+	color: #fff;
+}
+
+span.form {
+	margin-right: 1em;
+	margin-right: 1em;
+	color: #fff;
+}
+
+li.greekSentence {
+	padding: 1em;
+	line-height: 1.5em;
+}
+
+ul.formsList {
+	margin-right: 1em;
+	margin-left: 1em;
+}
+
+ul.formsList li {
+	margin-bottom: 0.5em;
+}
+
+
+
+h1 {
+	font-weight: normal;
+	font-size: 1.1rem;
+	line-height: 1.2rem;
+	padding: 30px 25px 25px 0;
+	background-color:#213450;
+	color: #ffffff;
+	text-align: center;
+}
+
