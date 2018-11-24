@@ -25,7 +25,7 @@ span.tokenSpan:hover {
 	min-width: 9px;
 	border:5px solid rgba(256,128,0,0.32);
 	background-color: rgba(256,128,0,0.32);
-	right: 40px;
+	right: 20px;
 	z-index: -10;
 }
 
@@ -121,7 +121,7 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#52000080', e
 span.tokenSpan:hover ul {
 	display: block;
 	margin: 8px;
-	position: absolute;
+	position: fixed;
 	list-style-type: none;
 	top: 12px;
 	left: 0;

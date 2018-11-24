@@ -52,7 +52,7 @@ span.tokenSpan:hover {
 span.tokenSpan:hover ul {
 	display: block;
 	margin: 8px;
-	position: absolute;
+	position: fixed;
 	list-style-type: none;
 	top: 12px;
 	left: 0;
