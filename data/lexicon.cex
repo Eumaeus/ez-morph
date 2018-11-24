@@ -1,14 +1,111 @@
 id#lemma#partOfSpeech#entry#notes
-1#lu/w#verb#I loosen#
-2#lo/gos#noun#word, story, account#
-3#ei)mi/#verb#I am#
-4#o(, h(, to/#article#the (definite article)#
-5#a)gora/, a)gora=s, h(#noun#market place#
-6#a)delfo/s, a)delfou=, o(#noun#brother#
-7#bi/blion, bibli/ou, to/#noun#book#
-8#dw=ron, dw/rou, to/#noun#gift (in plural, "bribes")#
-9#ei)s#prep#into; to; for (purpose) (+ acc.)#
-10#e)k, e)c#prep#out of (+ gen.)#
-11#e)n#prep#in (+ dat.)#
-12#paideu/ei#verb#educates#
-13#pe/mpei#verb#sends#
+1#o(, h(, to/#article#the (definite article)#ch.1
+2#a)gora/, a)gora=s, h(#noun#market place#ch.1
+3#a)/nqrwpos, a)nqrw/pou, o(#noun#human being#ch.1
+4#a)delfo/s, a)delfou=, o(#noun#brother#ch.1
+5#bibli/on, bibli/ou, to/#noun#book#ch.1
+6#dw=ron, dw/rou, to/#noun#gift; bribe (esp. in plural)#ch.1
+7#ei)s#preposition#(+ acc.) into; to; for (purpose)#ch.1
+8#e)k, e)c#preposition#(+ gen.) from; out of#ch.1
+9#e)n#preposition#(+ dat.) in#ch.1
+10#e)/rgon, e)/rgou, to/#noun#work; deed#ch.1
+11#qeo/s, qeou=, o( h(#noun#god, goddess#ch.1
+12#kai/#conjunction#and#ch.1
+13#kai/#adverb#also, even#ch.1
+14#kai/ ... kai/#conjunction#both and#ch.1
+15#lo/gos, lo/gou, o(#noun#word, speech, story#ch.1
+16#ma/xh, ma/xhs, h(#noun#battle#ch.1
+17#nh=sos, nh/sou, h(#noun#island#ch.1
+18#o(do/s, o(/dou, h(#noun#road#ch.1
+19#oi)ki/a, oi)ki/as, h(#noun#house#ch.1
+20#*o(/mhros, *o(mh/rou, o(#noun#Homer#ch.1
+21#paideu/w, paideu/sw, e)pai/deusa, pepai/deuka, pepai/deumai, e)paideu/qhn#verb#educates#ch.1
+22#pe/mpw, pe/myw, e)/pemya, pe/pomfa, pe/pemmai, e)pe/mfqhn#verb#sends#ch.1
+23#te/xnh, te/xnhs, h(#noun#art, skill, craft#ch.1
+24#xw/ra, xw/ras, h(#noun#land, country#ch.1
+25#yuxh/, yuxh=s, h(#noun#soul#ch.1
+26#w)/#interjection#Oh!#ch.1; used with vocative
+27#a)/ggelos, a)gge/lou, o(#noun#messenger#ch.2; origin of angels
+28#a)po/#preposition#(+gen.) from, away from#ch.2
+29#a)=ra#particle#introduces a question#ch.2
+30#ga/r#postpositive conjunction#for (explanatory)#ch.2
+31#de/#postpositive conjunction#but#ch.2, comes second
+32#e(/c#indeclinable numeral#six#ch.2
+33#eu)=#adverb#well#ch.2
+34#zw=|on, zw/|ou, to/#noun#animal#ch.2
+35#h)/#conjunction#or#ch.2
+36#h)/...h)/#conjunctions#either...or#ch.2
+37#keleu/w, keleu/sw, e)ke/leusa, keke/leuka, keke/leusmai, e)keleu/sqhn#verb#order, command#ch.2
+38#lu/w, lu/sw, e)/lusa, le/luka, le/lumai, e)lu/qhn#verb#unbind, free, release; dissolve; destroy#ch.2
+39#me/n...de/#postpositive conjunctions#on the one hand...on the other hand#ch.2, comes second in the clause
+40#nu=n#adverb#now#ch.2
+41#ce/nos, ce/nou, o(#noun#guest-friend, host, stranger, foreigner#ch.2
+42#ou), ou)k, ou)x#adverb#not#ch.2
+43#para/#preposition#(+gen.) from (the side of)#ch.2
+44#para/#preposition#(+dat.) at (the side of), at the house of#ch.2
+45#para/#preposition#(+acc.) to (the side of), beside; contrary to#ch.2
+46#pe/nte#indeclinable numeral#five#ch.2
+47#po/lemos, pole/mou, o(#noun#war#ch.2
+48#pro/#preposition#(+gen.) before; in front of#ch.2
+49#ste/fanos, stefa/nou, o(#noun#crown, wreath#ch.2
+50#fi/los, fi/lou, o(#noun#friend#ch.2
+51#fili/a, fili/as, h(#noun#friendship#ch.2
+52#xruso/s, xrusou=, o(#noun#gold#ch.2
+53#a)=qlon, a)/qlou, to/#noun#prize#ch.3
+54#a)lla/#conjunction#but#ch.3
+55#a)nti/#preposition#(+gen.) instead of#ch.3
+56#a)reth/, a)reth=s, h(#noun#excellence, virtue#ch.3
+57#boulh/, boulh=s, h(#noun#will, council#ch.3
+58#gra/fw, gra/yw, e)/grays, ge/grafa, ge/grammai, e)gra/fhn#verb#write, draw#ch.3
+59#dh/#postpositive particle#in fact, of course#ch.3
+60#dh=mos, dh/mou, o(#noun#the people#ch.3
+61#dhmokrati/a, dhmokrati/as, h(#noun#democracy#ch.3
+62#dia/#preposition#(+gen.) through#ch.3
+63#dia/#preposition#(+acc.) on account of#ch.3
+64#ei)rh/nh, ei)rh/nhs, h(#noun#peace#ch.3
+65#e)kklhsi/a, e)kklhsi/as, h(#noun#assembly#ch.3
+66#e)pei/#conjunction#after, when, since#ch.3
+67#e)peidh/#conjunction#after, when, since#ch.3
+68#qu/w, qu/sw, e)/qusa, te/quka, te/qumai, e)tu/qhn#verb#sacrifice#ch.3
+69#qusi/a, qusi/as, h(#noun#sacrifice#ch.3
+70#i(/na#conjunction#in order that#ch.3
+71#mh/#adverb#not#ch.3
+72#ni/kh, ni/khs, h(#noun#victory#ch.3
+73#o(/pws#conjunction#in order that#ch.3
+74#o)fqalmo/s, o)fqalmou=, o(#noun#eye#ch.3
+75#pau/w, pau/sw, e)/pausa, pe/pauka, pe/paumai, e)pau/qhn#verb#make stop, stop#ch.3
+76#peri/#preposition#(+gen.) concerning, about#ch.3
+77#peri/#preposition#(+dat.) around#ch.3#
+78#peri/#preposition#(+acc.) around, concerning#ch.3
+79#fula/ttw, fula/zw, e)fu/laza, pefu/laxa, pefu/lagmai, e)fula/xqhn#verb#guard#ch.3#
+80#w(s#conjunction#in order that#ch.3
+81#zu/mh, zu/mhs, h(#noun#leaven#enzyme
+82#a)gaqo/s, a)gaqh/, a)gaqo/n#adjective#good#ch.4
+83#a)/n#particle#used in some conditional sentences#ch.4
+84#a)/cios, a)ci/a, a)/cion#adjective#(+gen.) worthy, worth#ch.4
+85#a)na/cios, a)na/cion#adjective#(+gen.) unworthy#ch.4
+86#a)rxh/, a)rxh=s, h(#noun#beginning; rule, empire#ch.4
+87#ge/fura, gefu/ras, h/#noun#bridge#ch.4
+88#dida/skw, dida/cw, e)di/daca, dedi/daca, dedi/dagmai, e)dida/xqhn#verb#teach#ch.4
+89#di/kh, di/khs, h(#noun#justice; lawsuit#ch.4
+90#a)/dikos, a)/dikon#adjective#unjust#ch.4
+91#di/kaios, dikai/a, di/kaion#adjective#just#ch.4
+92#e)qe/lw, e)qelh/sw, h)qe/lhsa, h)qe/lhka, , #verb#be willing, wish#ch.4
+93#ei)#particle#if#ch.4
+94#e)a/n#particle#if#ch.4
+95#h(me/ra, h(me/ras, h(#noun#day#ch.4
+96#qa/latta, qala/tths, h(#noun#sea#ch.4
+97#qa/ptw, qa/yw, e)/qaya, , te/qammai, e)ta/fhn#verb#bury#ch.4
+98#kai/toi#particle#and further, and yet#ch.4
+99#kako/s, kakh/, kako/n#adjective#bad, evil#ch.4
+100#kalo/s, kalh/, kalo/n#adjective#beautiful, noble, good#ch.4
+101#meta/#preposition#(+gen.) with (+dat.) after#ch.4
+102#moi=ra, moi/ras, h(#noun#fate#ch.4
+103#mou=sa, mou/shs, h(#noun#muse#ch.4
+104#neani/as, neani/ou, o(#noun#young man#ch.4
+105#o(/plon, o(/plou, to/#noun#tool; (pl.) weapons#ch.4
+106#o(pli/ths, o(pli/tou, o(#noun#hoplite, heavy-armed foot-soldier#ch.4
+107#pa/lai#adverb#long ago#ch.4
+108#poihth/s, poihtou=, o(#noun#poet, author#ch.4
+109#poli/ths, poli/tou, o(#noun#citizen#ch.4
+110#stratiw/ths, stratiw/tou, o(#noun#soldier#ch.4
