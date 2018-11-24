@@ -51,11 +51,12 @@ span.tokenSpan:hover {
 
 span.tokenSpan:hover ul {
 	display: block;
+	margin: 8px;
 	position: absolute;
 	list-style-type: none;
-	bottom: 10px;
-	left: 0px;
-	right: 0px;
+	top: 12px;
+	left: 0;
+	right: 0;
 	font-weight: normal;
 	font-size: 85%;
 	line-height: 1.2em;
