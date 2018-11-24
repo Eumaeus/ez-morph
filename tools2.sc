@@ -155,15 +155,18 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 			println(s"\nFound ${lexData.lines.size} lines of lexical data.")
 			lexData
 		}
+		println(s"Got raw lexicon data.")
 
 		val formsRawData:String = {
 				val formsData:String = Source.fromFile(formsFile).getLines.mkString("\n")
 				println(s"Found ${formsData.lines.size} lines of forms data.")
 				formsData
 		}
+		println(s"Got raw forms data.")
 
 		// Validate and build a vector of lexEntries
 		val lexVec:Vector[String] = lexRawData.lines.toVector.filter(_.size > 1)
+		println(s"Filtered out empty lexicon lines.")
 
 		val headerLine:String = lexVec.head
 		if (headerLine != "id#lemma#partOfSpeech#entry#notes") {
@@ -172,6 +175,7 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 		val lexEntryStrings:Vector[String] = lexVec.tail
 
 		// Get a vector of lexical entries
+		println("Creating lexicon entries: \n")
 		val lexEntries:Vector[LexEntry] = {
 			lexEntryStrings.map(les => {
 				// Test for fields		
@@ -203,10 +207,11 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 					throw new Exception(s""" "${newLexEntry.lemma.ucode} (${newLexEntry.lemma.ascii})" n file ${lexFile} contains an invalid character.""")
 				}
 				//println(s"\n----------")
-				//println(s"${newLexEntry}")
+				print(s"${newLexEntry.id} ")
 				newLexEntry
 			})
 		}
+		println("\nAll lexicon entries created.\n")
 		// Confirm that there are no duplicate IDs 
 		val testVec = lexEntries.groupBy(_.id).toVector
 		val filteredVec = testVec.filter(o => o._2.size > 1)
@@ -216,10 +221,12 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 			val errorStr2:String = filteredVec.mkString("\n")
 			throw new Exception(s"${errorStr1}\n${errorStr2})")
 		}
+		println(s"Confirmed that there are no duplicat lexicon IDs.")
 
 		// Validate and build a vector of forms 
 		val formsLinesVec:Vector[String] = formsRawData.lines.toVector
 		val formsVec:Vector[String] = formsLinesVec.filter(_.size > 0)
+		println("Filtered out blank forms lines.")
 
 		val formsHeaderLine:String = formsVec.head
 		if (formsHeaderLine != "lexId#form#postag") {
@@ -229,6 +236,7 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 
 
 		// Get a vector of forms
+		println("\nCreating forms…\n")
 		val allForms:Vector[FormEntry] = {
 			formsEntryStrings.map(les => {
 				// Test for fields		
@@ -265,9 +273,11 @@ def doValidate(lexFile:String = defaultLexFile, formsFile:String = defaultFormsF
 				if (newFormEntry.greekForm.ucode.contains("#")) {
 					throw new Exception(s""" "${newFormEntry.greekForm.ucode} (${newFormEntry.greekForm.ascii})" in file ${formsFile} contains an invalid character.""")
 				}
+				print(". ")
 				newFormEntry
 			})
 		}
+		println("\nForms created.")
 		// Confirm that there are no duplicate IDs 
 		val testFormsVec = allForms.groupBy(identity).toVector
 		val filteredFormsVec = testFormsVec.filter(o => o._2.size > 1)
