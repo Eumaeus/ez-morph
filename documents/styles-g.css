@@ -179,5 +179,9 @@ h1 {
 	background-color:#213450;
 	color: #ffffff;
 	text-align: center;
+	position: fixed;
+	margin: 0;
+	top: 0px;
+	left: 0px;
 }
 
