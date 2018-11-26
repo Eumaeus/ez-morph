@@ -120,10 +120,10 @@ filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#52000080', e
 
 span.tokenSpan:hover ul {
 	display: block;
-	margin: 8px;
+	margin: 0px;
 	position: fixed;
 	list-style-type: none;
-	top: 12px;
+	top: 0px;
 	left: 0;
 	right: 0;
 	font-weight: normal;
@@ -174,7 +174,7 @@ h1 {
 	font-size: 1.1rem;
 	line-height: 1.2rem;
 	min-height: 4em;
-	padding: 30px 25px 25px 0;
+	padding: 0;
 	margin: 0;
 	background-color:#213450;
 	color: #ffffff;
