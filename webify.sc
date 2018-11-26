@@ -84,7 +84,7 @@ def htmlAnalyze(bc:String, uc:String, ti:Int, si:Int, dt:Int = distanceThreshold
 							})	
 							possibleCases.size > 0
 						}
-						case none => false
+						case None => false
 					}
 				}
 			}
@@ -92,8 +92,8 @@ def htmlAnalyze(bc:String, uc:String, ti:Int, si:Int, dt:Int = distanceThreshold
 		returnVal
 	}
 
-	/* If a noun, adjective, article, or pronoun, find what cases are represented */
 
+	/* If a noun, adjective, article, or pronoun, find what cases are represented */
 	val hasCase:List[String] = List("art","noun","adj","pron")
 	val cases:Option[Vector[String]] = {
 		perfectMatches.size match {

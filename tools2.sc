@@ -136,7 +136,7 @@ case class FormEntry(form:String, lex:LexEntry, postag:String) {
 
 		def html:String = {
 			val entryString:String = lex.html
-			val ts:String = s"""<span class="formEntry"><span class="form">${ucodePlus(greekForm)}</span> <span class="pos">${pos}</span> from ${entryString}</span>"""
+			val ts:String = s"""<span class="formEntry"><span class="form">${ucodePlus(greekForm)}</span> <span class="pos">${pos}</span> from <br/>  ${entryString}</span>"""
 			ts
 		}
 }
