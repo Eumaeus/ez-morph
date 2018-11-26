@@ -11,7 +11,7 @@ body {
 }
 
 .analyzedSentences {
-	margin: 2em;
+	margin-top: 4em;
 }
 
 span.tokenSpan:hover {
@@ -181,5 +181,20 @@ h1 {
 	margin: 0;
 	top: 0px;
 	left: 0px;
+	position: fixed;
+	right: 0px;
 }
+
+form#styleSwitcher {
+	top: 10px;
+	position: fixed;
+}
+
+form#styleSwitcher input:hover {
+	color: blue;
+}
+
+form#styleSwitcher input {
+}
+
 

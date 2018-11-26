@@ -33,7 +33,7 @@ val htmlHeader:String = """
 
 <h1> </h1>
 
-<form>
+<form id="styleSwitcher">
 <input type="submit" onclick="switch_style('styles-g');return false;" name="styles-g" value="Color-code" id="styles-g">
 <input type="submit" onclick="switch_style('styles-blank');return false;" name="styles-blank" value="Plain" id="styles-black">
 </form>
