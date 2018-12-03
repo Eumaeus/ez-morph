@@ -87,6 +87,7 @@ span.form {
 li.greekSentence {
 	padding: 1em;
 	line-height: 1.5em;
+	margin-left: 1em;
 }
 
 ul.formsList {
