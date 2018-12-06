@@ -168,7 +168,7 @@ def htmlAnalyze(bc:String, uc:String, ti:Int, si:Int, dt:Int = distanceThreshold
 
 def doAnalyze(s1:String, si:Int, dt:Int = distanceThreshold, markdown:Boolean = false):String = {
 	val depunctuated:String = depunctuate(s1) 
-	val tokens:Vector[String] = depunctuated.split(" ").toVector
+	val tokens:Vector[String] = depunctuated.split(" ").toVector.filter(_.size > 0)
 	val testGreekString:LiteraryGreekString = LiteraryGreekString(s1)
 
 	if (markdown) {
