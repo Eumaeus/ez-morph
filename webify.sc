@@ -13,10 +13,12 @@ def htmlAnalyze(bc:String, uc:String, ti:Int, si:Int, dt:Int = distanceThreshold
 	/* Get perfect matches, if any */
 
 	val perfectMatches:Vector[FormEntry] = {
-		 val greekS1:LiteraryGreekString = LiteraryGreekString(bc)
-		formEntriesOption.get.filter( f => {
+		val greekS1:LiteraryGreekString = LiteraryGreekString(bc)
+		val tempPerfect:Vector[FormEntry] = formEntriesOption.get.filter( f => {
 			LiteraryGreekString(f.form).ascii == greekS1.ascii
 		})
+		println(s"\t\tperfect matches = ${tempPerfect.size}")
+		tempPerfect
 	}
 
 	/* If (and only if) there are no perfect matches, find suggestions */
@@ -140,7 +142,7 @@ def htmlAnalyze(bc:String, uc:String, ti:Int, si:Int, dt:Int = distanceThreshold
 		}
 	}
 	val undoneClass:String = {
-		if (partialMatches.size > 0) " unanalyzed " else ""
+		if (perfectMatches.size == 0) " unanalyzed " else ""
 	}
 	val allClasses:String = s"tokenSpan unhovered ${verbClass} ${caseClass} ${undoneClass}"
 	val opener:String = s"""<span id="tokenSpan_${idString}" class="${allClasses}" >""" 
@@ -176,7 +178,7 @@ def doAnalyze(s1:String, si:Int, dt:Int = distanceThreshold, markdown:Boolean = 
 		val zippedTokens:Vector[((String, String), Int)] = tokens.zip(uCodeTokens).zipWithIndex
 		//println(s"working with ${zippedTokens}\n")
 		val htmlString:String = zippedTokens.map(zt => {
-			println(s"\ttoken ${zt._2}/${zippedTokens.size}")
+			println(s"\ttoken ${zt._2 + 1}/${zippedTokens.size} = ${zt._1}")
 			s"${htmlAnalyze(zt._1._1, zt._1._2, zt._2, si)}"
 		}).mkString("\n")
 		htmlString
@@ -222,7 +224,7 @@ def analyzeFile(name:String = "exercises", filePath:String = "documents/", lexFi
 				val start = System.currentTimeMillis
 				val l:String = zwi._1
 				val i:Int = zwi._2
-				println(s"Sentence ${zwi._2}/${exData.size}")
+				println(s"Sentence ${zwi._2 + 1}/${exData.size}")
 				val analysisString:String = doAnalyze(l, i, markdown = true)
 				val totalTime = System.currentTimeMillis - start
 

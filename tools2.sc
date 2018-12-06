@@ -12,7 +12,7 @@ val parts:GreekPartsOfSpeech = GreekPartsOfSpeech()
 
 
 /* USER PARAMETERS */
-val distanceThreshold:Int = 55 // lower = fewer suggested matches. From 1 to 100.
+val distanceThreshold:Int = 45 // lower = fewer suggested matches. From 1 to 100.
 
 /* --------------- */
 
