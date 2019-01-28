@@ -6,7 +6,9 @@ import scala.util.control.Exception.catching
 import  java.util.Calendar
 
 val defaultLexFile:String = "../lexdata/lexicon.cex"
+//val defaultLexFile:String = "/Users/cblackwell/Desktop/Keians/lexdata/lexicon.cex"
 val defaultFormsFile:String = "../lexdata/forms.cex"
+//val defaultFormsFile:String = "/Users/cblackwell/Desktop/Keians/lexdata/forms.cex"
 val parts:GreekPartsOfSpeech = GreekPartsOfSpeech()
 
 
